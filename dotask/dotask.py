@@ -9,7 +9,7 @@ DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 class TaskStatus(Enum):
     TODO = "todo"
     DONE = "done"
-    IN_PROGRESS = "in progress"
+    IN_PROGRESS = "in-progress"
     
 
 
@@ -42,7 +42,7 @@ def save_file(file: str, tasks: list[dict[str, Any]]):
 
 def print_task_table(tasks: list[dict[str, Any]]) -> None:
     headers = ["ID", "Description", "Status", "Created At", "Updated At"]
-    widths = [5, max(28, max([len(t['description']) for t in tasks])), 12, 20, 20]
+    widths = [5, max(28, max([len(t['description']) for t in tasks], default=0)), 12, 20, 20]
 
     def format_row(row):
         return "│ " + " │ ".join(str(cell).ljust(width) for cell, width in zip(row, widths)) + " │"
@@ -66,7 +66,11 @@ def print_task_table(tasks: list[dict[str, Any]]) -> None:
     print(bottom)
 
 
-def list_tasks(tasks: list[dict[str, Any]]) -> None:
+def list_tasks(tasks: list[dict[str, Any]],  status: str, order_by: str) -> None:
+    if not (status == 'all'):
+        tasks = list(filter(lambda task: task['status'] == status, tasks))
+        
+    tasks = sorted(tasks, key=lambda task: task[order_by])
     print_task_table(tasks)
 
 
