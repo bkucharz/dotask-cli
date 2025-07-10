@@ -12,12 +12,15 @@ subparsers = global_parser.add_subparsers(title='actions', help='chose what to d
 subparsers.required = True
 
 add_parser = subparsers.add_parser('add', help='add a new task')
+add_parser.add_argument('description')
+add_parser.set_defaults(action=add_task)
 
 update_parser = subparsers.add_parser('update', help='update a task')
 
 delete_parser = subparsers.add_parser('delete', help='delete a task')
 
 list_parser = subparsers.add_parser('list', help='list tasks')
+list_parser.set_defaults(action=list_tasks)
 
 args = global_parser.parse_args()
 
