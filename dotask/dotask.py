@@ -24,20 +24,38 @@ def load_file():
     except json.decoder.JSONDecodeError:
         cli.global_parser.exit(status=1, message=f"Cannot read data from {str(file)}")
     
-    
+
+def print_task_table(tasks):
+    headers = ["ID", "Description", "Status", "Created At", "Updated At"]
+    widths = [5, max(28, max([len(t['description']) for t in tasks])), 12, 20, 20]
+
+    def format_row(row):
+        return "│ " + " │ ".join(str(cell).ljust(width) for cell, width in zip(row, widths)) + " │"
+
+    top = "┌" + "┬".join("─" * (w + 2) for w in widths) + "┐"
+    sep = "├" + "┼".join("─" * (w + 2) for w in widths) + "┤"
+    bottom = "└" + "┴".join("─" * (w + 2) for w in widths) + "┘"
+
+    print(top)
+    print(format_row(headers))
+    print(sep)
+    for task in tasks:
+        row = [
+            task["id"],
+            task["description"],
+            task["status"],
+            task["createdAt"],
+            task["updatedAt"],
+        ]
+        print(format_row(row))
+    print(bottom)
+
+
 def list_tasks():
     tasks = load_file()
-    
-    pad = 15
-    print('-' * (pad * 5 + 6))
-    print(f"|{'id':^{pad}}|{'description':^{pad}}|{'status':^{pad}}|{'createdAt':^{pad}}|{'updatedAt':^{pad}}|")
-    print('-' * (pad * 5 + 6))
-    
-    for task in tasks:
-        print(f"|{task['id']:^{pad}}|{task['description']:^{pad}}|{task['status']:^{pad}}|{task['createdAt']:^{pad}}|{task['updatedAt']:^{pad}}|")
 
-    print('-' * (pad * 5 + 6))
-    
+    print_task_table(tasks)
+
 
 def add_task():
     tasks = load_file()
