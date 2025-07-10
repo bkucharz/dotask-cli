@@ -1,3 +1,4 @@
-from dotask import cli
+from dotask.cli import args
+from dotask.dotask import main
 
-cli.args.action()
+main(args.action(args), args.file)

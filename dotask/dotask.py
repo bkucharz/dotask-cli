@@ -1,9 +1,10 @@
-from dotask import cli
 from pathlib import Path
 import json
 from enum import Enum
 from datetime import datetime
+from typing import Any, Callable
 
+DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 class TaskStatus(Enum):
     TODO = "todo"
@@ -12,20 +13,34 @@ class TaskStatus(Enum):
     
 
 
+def main(action: Callable, file: str):
+    tasks = load_file(file)
+    action(tasks)
+    if action != list_tasks:
+        save_file(file, tasks)
 
-def load_file():
-    file = Path(cli.args.file)
+
+def load_file(file: str) -> list[dict[str, Any]]:
+    file = Path(file)
     if not file.exists() or file.stat().st_size == 0:
         return []
-    
+
     try:
         with open(file, 'r') as task_file:
             return json.load(task_file)
     except json.decoder.JSONDecodeError:
-        cli.global_parser.exit(status=1, message=f"Cannot read data from {str(file)}\n")
-    
+        print(f"Cannot read data from {str(file)}")
+        exit(1)
 
-def print_task_table(tasks):
+
+def save_file(file: str, tasks: list[dict[str, Any]]):
+    file = Path(file)
+
+    with open(file, 'w+') as task_file:
+        json.dump(tasks, task_file, default=str)
+
+
+def print_task_table(tasks: list[dict[str, Any]]) -> None:
     headers = ["ID", "Description", "Status", "Created At", "Updated At"]
     widths = [5, max(28, max([len(t['description']) for t in tasks])), 12, 20, 20]
 
@@ -51,66 +66,47 @@ def print_task_table(tasks):
     print(bottom)
 
 
-def list_tasks():
-    tasks = load_file()
-
+def list_tasks(tasks: list[dict[str, Any]]) -> None:
     print_task_table(tasks)
 
 
-def add_task():
-    tasks = load_file()
+def add_task(tasks: list[dict[str, Any]], description: str):
     ids = [task['id'] for task in tasks]
-    
+
     new_id = 1
     while new_id in ids:
         new_id += 1
-    
+
     task = {
         "id": new_id,
-        "description": cli.args.description,
+        "description": description,
         "status": TaskStatus.TODO.value,
-        "createdAt": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "updatedAt": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        "createdAt": datetime.now().strftime(DATETIME_FORMAT),
+        "updatedAt": datetime.now().strftime(DATETIME_FORMAT)
     }
-    
-    tasks.append(task)
-    
-    file = Path(cli.args.file)
 
-    with open(file, 'w+') as task_file:
-        json.dump(tasks, task_file, default=str)
-        
-        
-def delete_task():
-    tasks = load_file()
+    tasks.append(task)
+
+
+def delete_task(tasks: list[dict[str, Any]], id: int):
     for index, task in enumerate(tasks):
-        if task['id'] == cli.args.id:
+        if task['id'] == id:
             break
     else:
-        cli.global_parser.exit(2, f"There is no task with id = {cli.args.id}\n")
-        
+        print(f"There is no task with id = {id}\n")
+        exit(1)
+
     tasks.pop(index)
 
-    file = Path(cli.args.file)
 
-    with open(file, 'w+') as task_file:
-        json.dump(tasks, task_file, default=str)
-        
-    
-def update_task():
-    tasks = load_file()
+def update_task(tasks: list[dict[str, Any]], id: int, status: TaskStatus):
     for index, task in enumerate(tasks):
-        if task['id'] == cli.args.id:
+        if task['id'] == id:
             break
     else:
-        cli.global_parser.exit(2, f"There is no task with id = {cli.args.id}\n")
+        print(f"There is no task with id = {id}\n")
+        exit(1)
         
-    task['status'] = cli.args.status.value
-    
-    file = Path(cli.args.file)
+    task['status'] = status.value
+    task['updatedAt'] = datetime.now().strftime(DATETIME_FORMAT)
 
-    with open(file, 'w+') as task_file:
-        json.dump(tasks, task_file, default=str)
-        
-    
-    

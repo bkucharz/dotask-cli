@@ -1,5 +1,6 @@
 import argparse
 from dotask.dotask import *
+from functools import partial
 
 global_parser = argparse.ArgumentParser(
     prog='test',
@@ -18,21 +19,25 @@ subparsers.required = True
 
 add_parser = subparsers.add_parser('add', help='add a new task')
 add_parser.add_argument('description')
-add_parser.set_defaults(action=add_task)
+add_parser.set_defaults(action=lambda args: partial(add_task, description=args.description))
 
 update_parser = subparsers.add_parser('update', help='update a task')
 update_parser.add_argument('id', type=int)
 update_parser.add_argument('status', choices=['todo', 'in-progress', 'done'], action=VerboseStore)
-update_parser.set_defaults(action=update_task)
+update_parser.set_defaults(action=lambda args: partial(update_task, id=args.id, status=args.status))
 
 delete_parser = subparsers.add_parser('delete', help='delete a task')
 delete_parser.add_argument('id', type=int)
-delete_parser.set_defaults(action=delete_task)
+delete_parser.set_defaults(action=lambda args: partial(delete_task, id=args.id))
 
 list_parser = subparsers.add_parser('list', help='list tasks')
-list_parser.set_defaults(action=list_tasks)
+list_parser.set_defaults(action=lambda args: list_tasks)
+
 
 args = global_parser.parse_args()
+
+
+
 
 
 
