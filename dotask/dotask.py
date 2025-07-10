@@ -1,4 +1,4 @@
-import dotask.cli
+from dotask import cli
 from pathlib import Path
 import json
 from enum import Enum
@@ -14,13 +14,15 @@ class TaskStatus(Enum):
 
 
 def load_file():
-    file = Path(dotask.cli.args.file)
-    if not file.exists():
+    file = Path(cli.args.file)
+    if not file.exists() or file.stat().st_size == 0:
         return []
     
-    with open(file, 'r') as task_file:
-        return json.load(task_file)
-    
+    try:
+        with open(file, 'r') as task_file:
+            return json.load(task_file)
+    except json.decoder.JSONDecodeError:
+        cli.global_parser.exit(status=1, message=f"Cannot read data from {str(file)}")
     
     
 def list_tasks():
