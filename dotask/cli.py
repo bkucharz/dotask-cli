@@ -18,6 +18,8 @@ add_parser.set_defaults(action=add_task)
 update_parser = subparsers.add_parser('update', help='update a task')
 
 delete_parser = subparsers.add_parser('delete', help='delete a task')
+delete_parser.add_argument('id', type=int)
+delete_parser.set_defaults(action=delete_task)
 
 list_parser = subparsers.add_parser('list', help='list tasks')
 list_parser.set_defaults(action=list_tasks)

@@ -79,6 +79,21 @@ def add_task():
 
     with open(file, 'w+') as task_file:
         json.dump(tasks, task_file, default=str)
+        
+        
+def delete_task():
+    tasks = load_file()
+    for index, task in enumerate(tasks):
+        if task['id'] == cli.args.id:
+            break
+    else:
+        cli.global_parser.exit(2, f"There is no task with id = {cli.args.id}")
+        
+    tasks.pop(index)
 
+    file = Path(cli.args.file)
+
+    with open(file, 'w+') as task_file:
+        json.dump(tasks, task_file, default=str)
     
     
