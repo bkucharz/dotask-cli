@@ -8,7 +8,7 @@ from datetime import datetime
 class TaskStatus(Enum):
     TODO = "todo"
     DONE = "done"
-    INPROGRESS = "in progress"
+    IN_PROGRESS = "in progress"
     
 
 
@@ -22,7 +22,7 @@ def load_file():
         with open(file, 'r') as task_file:
             return json.load(task_file)
     except json.decoder.JSONDecodeError:
-        cli.global_parser.exit(status=1, message=f"Cannot read data from {str(file)}")
+        cli.global_parser.exit(status=1, message=f"Cannot read data from {str(file)}\n")
     
 
 def print_task_table(tasks):
@@ -87,7 +87,7 @@ def delete_task():
         if task['id'] == cli.args.id:
             break
     else:
-        cli.global_parser.exit(2, f"There is no task with id = {cli.args.id}")
+        cli.global_parser.exit(2, f"There is no task with id = {cli.args.id}\n")
         
     tasks.pop(index)
 
@@ -95,5 +95,22 @@ def delete_task():
 
     with open(file, 'w+') as task_file:
         json.dump(tasks, task_file, default=str)
+        
+    
+def update_task():
+    tasks = load_file()
+    for index, task in enumerate(tasks):
+        if task['id'] == cli.args.id:
+            break
+    else:
+        cli.global_parser.exit(2, f"There is no task with id = {cli.args.id}\n")
+        
+    task['status'] = cli.args.status.value
+    
+    file = Path(cli.args.file)
+
+    with open(file, 'w+') as task_file:
+        json.dump(tasks, task_file, default=str)
+        
     
     
