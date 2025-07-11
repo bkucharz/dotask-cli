@@ -6,7 +6,7 @@ from functools import partial
 DEFAULT_DATA_FILE =  Path.home() / '.dotask' / 'tasks.json'
 
 global_parser = argparse.ArgumentParser(
-    prog='test',
+    prog='dotask',
     description="A lightweight command-line tool for managing tasks. Add, update, delete, and track tasks.",
 )
 
