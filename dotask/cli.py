@@ -2,6 +2,8 @@ import argparse
 from dotask.dotask import *
 from functools import partial
 
+DEFAULT_DATA_FILE =  Path.home() / '.dotask' / 'tasks.json'
+
 global_parser = argparse.ArgumentParser(
     prog='test',
     description="A lightweight command-line tool for managing tasks. Add, update, delete, and track tasks.",
@@ -12,7 +14,7 @@ class VerboseStore(argparse.Action):
         mapping = {'todo': TaskStatus.TODO, 'in-progress': TaskStatus.IN_PROGRESS, 'done': TaskStatus.DONE}
         setattr(namespace, self.dest, mapping[value])
 
-global_parser.add_argument('-f', '--file', default='./dotask/tasks.json', help='file path to tasks')
+global_parser.add_argument('-f', '--file', default=DEFAULT_DATA_FILE, help='file path to tasks')
 
 subparsers = global_parser.add_subparsers(title='actions', help='chose what to do with a task list')
 subparsers.required = True
