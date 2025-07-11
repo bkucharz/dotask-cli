@@ -32,7 +32,7 @@ delete_parser.set_defaults(action=lambda args: partial(delete_task, id=args.id))
 
 list_parser = subparsers.add_parser('list', help='list tasks')
 list_parser.add_argument('-s', '--status', choices=['all', 'done', 'todo', 'in-progress'], default='all')
-list_parser.add_argument('-o', '--order-by', dest='order_by', choices=['status', 'createdAt', 'updatedAt'], default='createdAt')
+list_parser.add_argument('-o', '--order-by', dest='order_by', choices=['id','status', 'createdAt', 'updatedAt'], default='createdAt')
 list_parser.set_defaults(action=lambda args: partial(list_tasks, status=args.status, order_by=args.order_by))
 
 
