@@ -6,12 +6,27 @@ from pathlib import Path
 from dotask import cli  # Import your cli module
 
 
-@pytest.mark.parametrize("argv, expected_action, expected_file", [
-    (["prog", "list"], "list_tasks", Path.home() / ".dotask" / "tasks.json"),
-    (["prog", "add", "My task"], "add_task", Path.home() / ".dotask" / "tasks.json"),
-    (["prog", "update", "1", "done"], "update_task", Path.home() / ".dotask" / "tasks.json"),
-    (["prog", "-f", "/tmp/tasks.json", "delete", "2"], "delete_task", Path("/tmp/tasks.json")),
-])
+@pytest.mark.parametrize(
+    "argv, expected_action, expected_file",
+    [
+        (["prog", "list"], "list_tasks", Path.home() / ".dotask" / "tasks.json"),
+        (
+            ["prog", "add", "My task"],
+            "add_task",
+            Path.home() / ".dotask" / "tasks.json",
+        ),
+        (
+            ["prog", "update", "1", "done"],
+            "update_task",
+            Path.home() / ".dotask" / "tasks.json",
+        ),
+        (
+            ["prog", "-f", "/tmp/tasks.json", "delete", "2"],
+            "delete_task",
+            Path("/tmp/tasks.json"),
+        ),
+    ],
+)
 def test_cli_invokes_main_with_correct_params(argv, expected_action, expected_file):
     with patch("dotask.cli.run_main") as mock_main:
         with patch.object(sys, "argv", argv):

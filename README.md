@@ -3,7 +3,12 @@
 ![CLI Task Manager](https://img.shields.io/badge/Python-3.8+-blue?logo=python)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-![Demo of dotask CLI](demo.gif)
+<a href="https://roadmap.sh/projects/task-tracker" target="_blank">
+<p align="center">
+  <img src="demo.gif" alt="Demo of dotask CLI">
+</p>
+</a>
+
 
 Dotask is a lightweight command-line task manager that helps you organize your to-dos efficiently. With a simple interface and powerful features, you can track what you need to do, what you're working on, and what you've completed.
 
