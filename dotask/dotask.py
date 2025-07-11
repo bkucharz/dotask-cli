@@ -35,7 +35,7 @@ class InvalidTaskFileError(Exception):
         self.file = file
 
 def load_file(file: str) -> list[Task]:
-    file = Path(file)
+    file = Path(file)    
     if not file.exists() or file.stat().st_size == 0:
         return []
 
@@ -65,6 +65,8 @@ def dict_to_task(d: dict) -> Task:
 
 def save_file(file: str, tasks: list[Task]):
     file = Path(file)
+    
+    file.parent.mkdir(parents=True, exist_ok=True)
 
     with open(file, 'w+') as task_file:
         json.dump([asdict(task) for task in tasks], task_file, indent=2, default=str)

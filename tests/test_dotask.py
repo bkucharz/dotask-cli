@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+import tempfile
 from unittest.mock import mock_open, patch
 import pytest
 from dotask.dotask import (
@@ -134,3 +135,29 @@ def test_save_file_writes_json():
         handle.write.assert_called()  # Check that something was written
         written_data = ''.join(call.args[0] for call in handle.write.call_args_list)
         assert '"description": "Task 1"' in written_data
+        
+
+
+def test_save_file_creates_missing_directories():
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # Create a path with non-existent parent directory
+        test_file = Path(temp_dir) / "nonexistent_dir" / "tasks.json"
+        
+        # Ensure the directory doesn't exist
+        assert not test_file.parent.exists()
+        
+        # Test saving
+        tasks = [Task(1, "Test", "todo", "2024-01-01", "2024-01-01")]
+        save_file(str(test_file), tasks)
+        
+        # Verify directory and file were created
+        assert test_file.parent.exists()
+        assert test_file.exists()
+
+def test_load_file_handles_missing_file():
+    with tempfile.TemporaryDirectory() as temp_dir:
+        test_file = Path(temp_dir) / "missing_tasks.json"
+        assert not test_file.exists()
+        
+        result = load_file(str(test_file))
+        assert result == []
