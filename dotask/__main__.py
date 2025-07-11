@@ -1,4 +1,4 @@
-from dotask.cli import args
-from dotask.dotask import main
+from dotask.cli import main
 
-main(args.action(args), args.file)
+if __name__ == "__main__":
+    main()

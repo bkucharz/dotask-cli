@@ -1,5 +1,6 @@
 import argparse
 from dotask.dotask import *
+from dotask.dotask import main as run_main
 from functools import partial
 
 DEFAULT_DATA_FILE =  Path.home() / '.dotask' / 'tasks.json'
@@ -38,7 +39,19 @@ list_parser.add_argument('-o', '--order-by', dest='order_by', choices=['id','sta
 list_parser.set_defaults(action=lambda args: partial(list_tasks, status=args.status, order_by=args.order_by))
 
 
-args = global_parser.parse_args()
+
+def main():
+    args = global_parser.parse_args()
+
+    try:
+        # Call dotask.dotask.main with action and file
+        run_main(args.action(args), args.file)
+    except TaskNotFoundError as e:
+        print(f"⚠️  {e}")
+        exit(1)
+    except InvalidTaskFileError as e:
+        print(f"❌  {e}")
+        exit(1)
 
 
 
